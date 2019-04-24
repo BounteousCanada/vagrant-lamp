@@ -1,0 +1,10 @@
+.DS_Store
+.idea
+.vagrant
+/www
+/backup
+/mysql
+/config.yml
+/files/php/builds/*
+/files/config_php.sh
+ubuntu-*
