@@ -38,7 +38,7 @@ specifically.
         OPTIONAL - recommended leave default `empty`
     -   vagrant_memory: Memory to assign to VM
             OPTIONAL - can leave default `auto`, assigns 50% of available system ram, recommended `4096` or more for M2 projects
-        -   vagrant_cpus: CPU Cores to assign to VM
+    -   vagrant_cpus: CPU Cores to assign to VM
             OPTIONAL - can leave default `auto`, assigns all physical cores at 75% max utilization
     -   vagrant_disk_size: Disk size to allocate to VM
             OPTIONAL - Defaults to 20GB dynamically allocated, can only be increased in size not decreased

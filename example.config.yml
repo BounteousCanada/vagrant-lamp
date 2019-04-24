@@ -1,0 +1,73 @@
+---
+vagrant_hostname: bounteous.vm.dev
+vagrant_machine_name: bounteous.vm
+vagrant_ip: 192.168.33.10
+
+# Allow VM to be accessed via a public network interface on your host.
+# Vagrant boxes are insecure by default, so be careful. You've been warned!
+# See: https://docs.vagrantup.com/v2/networking/public_network.html
+vagrant_public_ip: ""
+
+# Virtual Machine Settings
+vagrant_memory: auto     # Memory to allocate to the virtual machine. Set to 'auto' to use default settings of 50% of available system ram
+vagrant_cpus: auto       # CPU cores to allocate to the virtual machine. Set to 'auto' to use default setting of all physical cores at 75% max utilization
+vagrant_disk_size: 20GB  # Disk image size to set on virtual machine. ***Note: this can only be increased
+
+# A list of synced folders, with the keys 'local_path', 'destination', and
+# a 'type' of [nfs|rsync|smb] (leave empty for slow native shares). See
+# windows example for local_path C:\\www\\sites
+vagrant_synced_folders:
+  - local_path: ~/Sites/www
+    destination: /srv/www
+    type: nfs
+    create: true
+
+  - local_path: ~/Sites/mysql
+    destination: /srv/mysql
+    type:
+    create: true
+
+  - local_path: ~/Sites/backup
+    destination: /srv/backup
+    type:
+    create: true
+
+# Optional software to install
+vagrant_optional_software:
+  - name: solr
+    enabled: false
+
+  - name: rabbitmq
+    enabled: false
+
+# PHP versions to install
+vagrant_php_versions:
+  - enabled: false
+    alias: 5.5
+    version: 5.5.38
+    port: 9055
+
+  - enabled: false
+    alias: 5.6
+    version: 5.6.40
+    port: 9056
+
+  - enabled: false
+    alias: 7
+    version: 7.0.33
+    port: 9070
+
+  - enabled: true
+    alias: 7.1
+    version: 7.1.27
+    port: 9071
+
+  - enabled: true
+    alias: 7.2
+    version: 7.2.16
+    port: 9072
+
+  - enabled: false
+    alias: 7.3
+    version: 7.3.4
+    port: 9073
