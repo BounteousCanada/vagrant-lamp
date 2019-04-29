@@ -22,12 +22,12 @@ if [ ! -f /etc/elasticsearch/elasticsearch.yml ]; then
     apt-get update
     apt-get install -y elasticsearch
 
+    echo "indices.query.bool.max_clause_count: 10024" >> /etc/elasticsearch/elasticsearch.yml
+
     # Start on boot
     systemctl enable elasticsearch.service
     systemctl restart elasticsearch.service
-fi
-
-if [ $(grep -c "indices.query.bool.max_clause_count" /etc/elasticsearch/elasticsearch.yml ) -eq 0 ] ; then
+elif [ $(grep -c "indices.query.bool.max_clause_count" /etc/elasticsearch/elasticsearch.yml ) -eq 0 ] ; then
     echo "indices.query.bool.max_clause_count: 10024" >> /etc/elasticsearch/elasticsearch.yml
     service elasticsearch restart
 fi

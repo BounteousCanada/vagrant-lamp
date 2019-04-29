@@ -14,8 +14,7 @@ sed -i.bak 's/.port = "8080";$/.port = "8090";\n    .connect_timeout = 30s;\n   
 
 if [ ! -f /etc/default/varnish.bak ]; then
     cp /etc/default/{varnish,varnish.bak}
-fi
-cat > /etc/default/varnish <<EOF
+    cat > /etc/default/varnish <<EOF
 START=yes
 NFILES=131072
 MEMLOCK=82000
@@ -25,6 +24,7 @@ DAEMON_OPTS="-a :80 \\
              -S /etc/varnish/secret \\
              -s malloc,256m"
 EOF
+fi
 
 if [ -f /lib/systemd/system/varnish.service ] && [ $(grep -c "a :6081" /lib/systemd/system/varnish.service) -eq 1 ] ; then
     sed -i "s/a :6081/a :80/" /lib/systemd/system/varnish.service

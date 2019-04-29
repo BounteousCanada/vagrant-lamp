@@ -165,7 +165,8 @@ Vagrant.configure(2) do |config|
 
   # Generate config.php from config.yml
   vconfig['vagrant_php_versions'].each do |php_version|
-    if php_version['enabled']
+  puts php_version['enabled']
+    if php_version['enabled'].to_s == 'true'
         config_php = config_php + "'#{php_version['version']}  #{php_version['alias']}  #{php_version['port']}  #{php_version['build']||'false'}'\n"
     end
   end
@@ -184,7 +185,7 @@ Vagrant.configure(2) do |config|
 
   # Run setup script for optional software
   vconfig['vagrant_optional_software'].each do |optional_software|
-    if optional_software['enabled']
+    if optional_software['enabled'].to_s == 'true'
         config.vm.provision "setup_#{optional_software['name']}", keep_color: true, type: "shell", path: "#{dir}/scripts/optional/setup_#{optional_software['name']}.sh"
     end
   end
