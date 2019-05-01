@@ -165,7 +165,6 @@ Vagrant.configure(2) do |config|
 
   # Generate config.php from config.yml
   vconfig['vagrant_php_versions'].each do |php_version|
-  puts php_version['enabled']
     if php_version['enabled'].to_s == 'true'
         config_php = config_php + "'#{php_version['version']}  #{php_version['alias']}  #{php_version['port']}  #{php_version['build']||'false'}'\n"
     end
