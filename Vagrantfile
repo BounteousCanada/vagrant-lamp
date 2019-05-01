@@ -82,9 +82,9 @@ end
 if !vconfig['vagrant_memory'].empty? && vconfig['vagrant_memory'].downcase != 'auto'
   mem = vconfig['vagrant_memory']
 elsif OS.mac?
-  mem = `sysctl -n hw.memsize`.to_i / 1024 / 1024 * mem_ratio
+  mem = (`sysctl -n hw.memsize`.to_i / 1024 / 1024 * mem_ratio).round
 elsif OS.linux?
-  mem = `grep 'MemTotal' /proc/meminfo | sed -e 's/MemTotal://' -e 's/ kB//'`.to_i / 1024 * mem_ratio
+  mem = (`grep 'MemTotal' /proc/meminfo | sed -e 's/MemTotal://' -e 's/ kB//'`.to_i / 1024 * mem_ratio).round
 elsif OS.windows?
   mem = (`wmic OS get TotalVisibleMemorySize`.split("\n")[2].to_i / 1024 * mem_ratio).round
 else
