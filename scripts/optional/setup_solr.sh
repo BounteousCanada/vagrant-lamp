@@ -19,7 +19,7 @@ fi
 #install solr
 if [ ! -d /opt/solr ]; then
     cd /opt/
-    wget --progress=bar:force https://github.com/BounteousCanada/vagrant-lamp-assets/releases/download/V1.0/solr.tar.gz
+    wget --progress=bar:force https://github.com/BounteousCanada/vagrant-lamp-assets/releases/download/V1.1/solr.tar.gz
     if [ -f /opt/solr.tar.gz ]; then
         tar -zxf solr.tar.gz
         chown -R tomcat:tomcat /opt/solr

@@ -46,7 +46,11 @@ function setup_apcu() {
     git clone git://github.com/krakjoe/apcu.git
     cd apcu
 
-    git checkout v5.1.16
+    if [[ $1 == *"5.5"* ]] || [[ $1 == *"5.6"* ]] ; then
+        git checkout PHP5
+    else
+        git  checkout v5.1.16
+    fi
 
     /opt/phpfarm/inst/php-$1/bin/phpize
     ./configure --with-php-config=/opt/phpfarm/inst/php-$1/bin/php-config
@@ -145,7 +149,7 @@ function setup_php() {
             # Attempt to download from vagrant-lamp-assets repo if available
             if [ ${phpBuild} == 'false' ] && [ ! -f /vagrant/files/php/builds/php-${phpVersion}.tar.gz ]; then
                 echo "Attempting to download php-${phpVersion}.tar.gz"
-                if [[ `wget -S -O /vagrant/files/php/builds/php-${phpVersion}.tar.gz https://github.com/BounteousCanada/vagrant-lamp-assets/releases/download/V1.0/php-${phpVersion}.tar.gz  2>&1 | grep 'HTTP/1.1 200 OK'` ]]; then
+                if [[ `wget -S -O /vagrant/files/php/builds/php-${phpVersion}.tar.gz https://github.com/BounteousCanada/vagrant-lamp-assets/releases/download/V1.1/php-${phpVersion}.tar.gz  2>&1 | grep 'HTTP/1.1 200 OK'` ]]; then
                     echo "Successfully downloaded php-${phpVersion}.tar.gz"
                 else
                     rm -f /vagrant/files/php/builds/php-${phpVersion}.tar.gz
@@ -164,6 +168,7 @@ function setup_php() {
                 ./main.sh ${phpVersion}
                 setup_xdebug ${phpVersion}
                 setup_imagick ${phpVersion}
+                setup_apcu ${phpVersion}
 
                 if [ ${phpVersion:0:1} == 5 ]; then
                     export PKG_CONFIG_PATH=
