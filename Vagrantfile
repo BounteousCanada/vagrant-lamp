@@ -137,7 +137,7 @@ Vagrant.configure(2) do |config|
     if synced_folder['type'] != 'nfs' || Vagrant::Util::Platform.windows?
        options[:owner] = owner
        options[:group] = group
-       options[:mount_options] = ["dmode=775,fmode=775"]
+       options[:mount_options] = ["dmode=777,fmode=777"]
     end
 
     if synced_folder.include?('options_override')
@@ -193,8 +193,8 @@ Vagrant.configure(2) do |config|
 
   # Make mysql's socket available to php - e.g.
   # echo "<?php \$li = new mysqli('localhost', 'root', 'root', 'mysql'); ?>" | php
-  #config.vm.provision "shell", inline: "if [ ! -L /tmp/mysql.sock ]; then ln -s /var/run/mysqld/mysqld.sock /tmp/mysql.sock; fi", run: "always"
+  config.vm.provision "shell", inline: "if [ ! -L /tmp/mysql.sock ]; then ln -s /var/run/mysqld/mysqld.sock /tmp/mysql.sock; fi", run: "always"
 
-  #config.vm.provision "shell", inline: "service mysql restart", run: "always"
+  config.vm.provision "shell", inline: "service mysql restart", run: "always"
 
 end
