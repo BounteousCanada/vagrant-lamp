@@ -93,10 +93,19 @@ cat <<- _EOF_
     ServerName  $ServerName
     DocumentRoot $DocumentRoot
 
-    ProxyPreserveHost On
-    ProxyPass / http://127.0.0.1:80/
-    RequestHeader set X-Forwarded-Port "443"
-    RequestHeader set X-Forwarded-Proto "https"
+    # PHP proxy specifications
+    <Proxy fcgi://127.0.0.1:9072>
+        ProxySet timeout=1800
+    </Proxy>
+
+    ProxyPassMatch ^/(.*\.php(/.*)?)$ fcgi://127.0.0.1:$PhpPort$DocumentRoot\$1
+
+    # Directory Permissions
+    <Directory $DocumentRoot>
+        Options +Indexes +FollowSymLinks +MultiViews
+        AllowOverride All
+        Require all granted
+    </Directory>
 
     # Logging
     ErrorLog  \${APACHE_LOG_DIR}/$ServerName-error.log
@@ -108,9 +117,16 @@ cat <<- _EOF_
     SSLCertificateFile  $CertPath/$CertName.crt
     SSLCertificateKeyFile $KeyPath/$CertName.key
 
+    <FilesMatch "\.(cgi|shtml|phtml|php)$">
+        SSLOptions +StdEnvVars
+    </FilesMatch>
+
+    BrowserMatch "MSIE [2-6]" \\
+        nokeepalive ssl-unclean-shutdown \\
+        downgrade-1.0 force-response-1.0
+
     # MSIE 7-19 should be able to use keepalive  (17-9 is NOT a typo)
     BrowserMatch "MSIE [17-9]" ssl-unclean-shutdown
-
 </VirtualHost>
 _EOF_
 }
