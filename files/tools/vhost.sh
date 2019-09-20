@@ -286,7 +286,8 @@ function vhost_list {
         if [ "$serverName" != "" ] ; then serverName=" -n*$serverName" ; fi
         if [ "$phpAlias" != "" ] ; then phpAlias=" -p*$phpAlias" ; fi
 
-        out="${out}****sudo*vhost*add*${serverName}${phpAlias}${documentRoot}${serverAlias} -f;"
+        out="${out}****sudo*vhost*add*${serverName}${phpAlias}${documentRoot}${serverAlias} -f;
+    "
     done
     echo "${out}" | column -t | sed "s/*/ /g"
 }
