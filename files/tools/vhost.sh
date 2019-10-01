@@ -2,7 +2,7 @@
 function show_header {
     echo -e "\e[32m"
     echo -e "***********************"
-    echo -e "* vhost version 1.0.3 *"
+    echo -e "* vhost version 1.0.4 *"
     echo -e "***********************\e[0m"
 }
 
@@ -11,7 +11,7 @@ function show_usage {
 Create or Remove vHost in Ubuntu Server
 Assumes PHP-FPM with proxy_fcgi and /etc/apache2/sites-available and /etc/apache2/sites-enabled setup are used
 
-Usage: sudo vhost add|remove|list|sites -d DocumentRoot -n ServerName [-p PhpVersion] [-a ServerAlias] [-s CertPath] [-c CertName] [-f]
+Usage: sudo vhost add|remove|list|sites -d DocumentRoot -n ServerName [-p PhpVersion] [-a ServerAlias] [-s CertPath] [-c CertName] [-t] [-f]
 Options:
   -d DocumentRoot    : DocumentRoot i.e. /var/www/yoursite
   -h Help            : Show this menu.
@@ -38,6 +38,9 @@ Options:
   -c CertName        : ***SELF SIGNED CERTIFICATE ARE AUTOMATICALLY CREATED FOR EACH VHOST USE THIS TO OVERRIDE***
                        Certificate Name "example.com" becomes "example.com.key" and "example.com.crt". OPTIONAL
                        Will default to ServerName
+  -t Terminate       : Terminate the ssl, routing traffic back through port 80. Useful for usage with Varnish, allowing
+                       Varnish to cache HTTPS pages. OPTIONAL
+                       Will default to not terminate the ssl.
   -f                 : Force mode - silently reponds 'yes' to any confirmation messages
 
 
@@ -67,7 +70,10 @@ cat <<- _EOF_
 <VirtualHost *:8090>
     ServerAdmin webmaster@localhost
     ServerName  $ServerName
-    DocumentRoot $DocumentRoot###ServerAlias######PhpProxy###
+    DocumentRoot $DocumentRoot
+    ###ServerAlias###
+
+    ###PhpProxy###
 
     # Directory Permissions
     <Directory $DocumentRoot>
@@ -92,6 +98,50 @@ cat <<- _EOF_
     ServerAdmin webmaster@localhost
     ServerName  $ServerName
     DocumentRoot $DocumentRoot
+    ###ServerAlias###
+
+    ###PhpProxy###
+
+    # Directory Permissions
+    <Directory $DocumentRoot>
+        Options +Indexes +FollowSymLinks +MultiViews
+        AllowOverride All
+        Require all granted
+    </Directory>
+
+    # Logging
+    ErrorLog  \${APACHE_LOG_DIR}/$ServerName-error.log
+    CustomLog \${APACHE_LOG_DIR}/$ServerName-access.log combined
+    LogLevel  warn
+
+    # SSL settings
+    SSLEngine on
+    SSLCertificateFile  $CertPath/$CertName.crt
+    SSLCertificateKeyFile $KeyPath/$CertName.key
+
+    <FilesMatch "\.(cgi|shtml|phtml|php)$">
+        SSLOptions +StdEnvVars
+    </FilesMatch>
+
+    BrowserMatch "MSIE [2-6]" \\
+        nokeepalive ssl-unclean-shutdown \\
+        downgrade-1.0 force-response-1.0
+
+    # MSIE 7-19 should be able to use keepalive  (17-9 is NOT a typo)
+    BrowserMatch "MSIE [17-9]" ssl-unclean-shutdown
+
+</VirtualHost>
+_EOF_
+}
+
+function create_ssl_vhost_with_termination {
+cat <<- _EOF_
+
+<VirtualHost *:443>
+    ServerAdmin webmaster@localhost
+    ServerName  $ServerName
+    DocumentRoot $DocumentRoot
+    ###ServerAlias###
 
     ProxyPreserveHost On
     ProxyPass / http://127.0.0.1:80/
@@ -153,15 +203,14 @@ function add_vhost {
 
     if [ ! -d $DocumentRoot ]; then
         mkdir -p $DocumentRoot
-        #chown USER:USER $DocumentRoot #POSSIBLE IMPLEMENTATION, new flag -u ?
     fi
 
     if [ "${ServerAlias}" != "" ]; then
-        ServerAlias="\n    ${ServerAlias}"
+        ServerAlias="${ServerAlias}"
     fi
 
     if [ "${PhpPort}" != "" ]; then
-        PhpProxy="\n\n    # PHP proxy specifications\n    <Proxy fcgi:\/\/127.0.0.1:$PhpPort>\n        ProxySet timeout=1800\n    <\/Proxy>\n\n    <FilesMatch \\\.php\\$>\n        SetHandler \"proxy:fcgi:\/\/127.0.0.1:$PhpPort\"\n    <\/FilesMatch>"
+        PhpProxy="# PHP proxy specifications\n    <Proxy fcgi:\/\/127.0.0.1:$PhpPort>\n        ProxySet timeout=1800\n    <\/Proxy>\n\n    <FilesMatch \\\.php\\$>\n        SetHandler \"proxy:fcgi:\/\/127.0.0.1:$PhpPort\"\n    <\/FilesMatch>"
     fi
 
     create_vhost | sed "s|###ServerAlias###|${ServerAlias}|g" | sed "s|###PhpProxy###|${PhpProxy}|g" > /etc/apache2/sites-available/200-${ServerName}.conf
@@ -187,7 +236,11 @@ function add_vhost {
         fi
     fi
 
-    create_ssl_vhost | sed "s|###ServerAlias###|${ServerAlias}|g" | sed "s|###PhpProxy###|${PhpProxy}|g" >> /etc/apache2/sites-available/200-${ServerName}.conf
+    if [ "$Terminate" = "y" ]; then
+      create_ssl_vhost_with_termination | sed "s|###ServerAlias###|${ServerAlias}|g" | sed "s|###PhpProxy###|${PhpProxy}|g" >> /etc/apache2/sites-available/200-${ServerName}.conf
+    else
+      create_ssl_vhost | sed "s|###ServerAlias###|${ServerAlias}|g" | sed "s|###PhpProxy###|${PhpProxy}|g" >> /etc/apache2/sites-available/200-${ServerName}.conf
+    fi
 
     # Enable Site
     cd /etc/apache2/sites-available/ && a2ensite 200-${ServerName}.conf
@@ -255,6 +308,7 @@ function vhost_list {
         documentRoot=$(echo "$file" | grep 'DocumentRoot' | head -n1 | xargs | cut -d' ' -f2)
         serverName=$(echo "$file" | grep 'ServerName ' | head -n1 | xargs | cut -d' ' -f2)
         port=$(echo "$file" | grep '<Proxy fcgi://127.0.0.1:' | xargs | head -n1 | cut -d':' -f3 | cut -d'>' -f1)
+        terminate=$(echo "$file" | grep 'ProxyPreserveHost')
         phpAlias=''
         for i in "${config_php[@]}"; do
             arr=(${i// / })
@@ -265,14 +319,15 @@ function vhost_list {
             fi
         done;
 
-        if [ "$serverAlias" != "" ] ; then serverAlias=" $serverAlias"    ; fi
-        if [ "$documentRoot" != "" ] ; then documentRoot=" -d*$documentRoot" ; fi
-        if [ "$serverName" != "" ] ; then serverName=" -n*$serverName" ; fi
-        if [ "$phpAlias" != "" ] ; then phpAlias=" -p*$phpAlias" ; fi
+        if [ "$serverAlias" != "" ] ; then serverAlias=" $serverAlias"; fi
+        if [ "$documentRoot" != "" ] ; then documentRoot=" -d*$documentRoot"; fi
+        if [ "$serverName" != "" ] ; then serverName=" -n*$serverName"; fi
+        if [ "$phpAlias" != "" ] ; then phpAlias=" -p*$phpAlias"; fi
+        if [ "$terminate" != "" ] ; then terminate=" -t"; fi
 
-        out="${out}****sudo*vhost*add*${serverName}${phpAlias}${documentRoot}${serverAlias} -f;"
+        out="${out}****sudo*vhost*add*${serverName}${phpAlias}${documentRoot}${serverAlias}${terminate} -f;\n"
     done
-    echo "${out}" | column -t | sed "s/*/ /g"
+    echo -e "${out}" | column -t | sed "s/*/ /g"
 }
 
 function vhost_sites {
@@ -293,6 +348,7 @@ ServerAlias=""
 PhpVersion=""
 PhpPort=""
 Force="n"
+Terminate="n"
 Task=''
 
 # Transform long options to short ones
@@ -323,7 +379,7 @@ for arg in "$@"; do
   esac
 done
 
-while getopts "d:s:k:a:p:n:c:h:ARLSf" OPTION; do
+while getopts "d:s:k:a:p:n:c:t:h:ARLSf" OPTION; do
     case $OPTION in
         h)
             show_usage
@@ -336,7 +392,7 @@ while getopts "d:s:k:a:p:n:c:h:ARLSf" OPTION; do
             ;;
         a)
             if [[ $(echo "${ServerAlias}" | grep ${OPTARG}) == '' ]]; then
-                ServerAlias+="ServerAlias ${OPTARG}\n    "
+                ServerAlias+="ServerAlias ${OPTARG}"
             fi
             ;;
         p)
@@ -350,6 +406,9 @@ while getopts "d:s:k:a:p:n:c:h:ARLSf" OPTION; do
             ;;
         c)
             CertName=$OPTARG
+            ;;
+        t)
+            Terminate="y"
             ;;
         A)
             Task="add"
