@@ -66,12 +66,12 @@ check_plugins ["vagrant-vbguest"]
 check_plugins ["vagrant-disksize"]
 
 # Determine CPU's to allocate to virtual machine (Default all cores, fallback 2)
-if !vconfig['vagrant_cpus'].empty? && vconfig['vagrant_cpus'].downcase != 'auto'
+if !vconfig['vagrant_cpus'].to_s.empty? && vconfig['vagrant_cpus'].to_s.downcase != 'auto'
   cpus = vconfig['vagrant_cpus']
 elsif OS.mac?
-  cpus = `sysctl -n hw.ncpu`.to_i
+  cpus = `sysctl -n hw.ncpu`.to_i / 2
 elsif OS.linux?
-  cpus = `nproc`.to_i
+  cpus = `nproc`.to_i / 2
 elsif OS.windows?
   cpus = `wmic cpu get NumberOfCores`.split("\n")[2].to_i
 else
@@ -79,8 +79,11 @@ else
 end
 
 # Determine memory to allocate to virtual machine (Default 50% available, fallback 4096mb)
-if !vconfig['vagrant_memory'].empty? && vconfig['vagrant_memory'].downcase != 'auto'
-  mem = vconfig['vagrant_memory']
+if !vconfig['vagrant_memory'].to_s.empty? && vconfig['vagrant_memory'].to_s.downcase != 'auto'
+  if vconfig['vagrant_memory'].to_s.downcase =~ /(g|gb)/ || vconfig['vagrant_memory'].to_i < 100
+    vconfig['vagrant_memory'] = vconfig['vagrant_memory'].to_i * 1024
+  end
+  mem = vconfig['vagrant_memory'].to_i
 elsif OS.mac?
   mem = (`sysctl -n hw.memsize`.to_i / 1024 / 1024 * mem_ratio).round
 elsif OS.linux?
