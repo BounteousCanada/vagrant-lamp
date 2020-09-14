@@ -26,6 +26,8 @@ if [ "$(lsb_release -sr)" != "18.04" ] ; then
     exit 1
 fi
 
+export DEBIAN_FRONTEND=noninteractive
+
 apt-get update
 
 # Install git, tig, htop, smem, strace, lynx and dos2unix
@@ -40,7 +42,8 @@ if [ ! -f /root/.bash_aliases ] || [ $(grep -c "for f in /etc/profile.d/\*aliase
 fi
 
 # Setup PHP compile pre-requisites
-apt-get install -y build-essential libbz2-dev libxpm-dev libmcrypt-dev language-pack-en \
+DEBIAN_FRONTEND=noninteractive apt-get install -yq build-essential libbz2-dev libxpm-dev libmcrypt-dev\
+    language-pack-en libsqlite3-dev libonig-dev libldb-dev libldap2-dev libgmp-dev\
     libcurl4-gnutls-dev libxml2-dev libjpeg-dev libpng-dev libssl-dev pkg-config libreadline-dev \
     curl autoconf libicu-dev libxslt-dev libfreetype6-dev daemonize libzip-dev libmagickwand-dev 2>&1
 

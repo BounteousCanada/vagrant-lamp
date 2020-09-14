@@ -8,8 +8,10 @@ source /vagrant/files/setup_helper.sh
 # Print Header
 print_header "Setup SOLR"
 
-# Install Tomcat 9
+# Install the required Java
+apt-get install -y openjdk-8-jre-headless 2>&1
 
+# Install Tomcat 9
 if [ ! -f /etc/tomcat9/tomcat-users.xml ]; then
     apt-get -y install tomcat9 tomcat9-admin 2>&1
     sed -i 's|</tomcat-users>|  <role rolename="admin-gui,manager-gui"/>\n  <user username="vagrant" password="vagrant" roles="admin-gui,manager-gui"/>\n</tomcat-users>|' /etc/tomcat9/tomcat-users.xml

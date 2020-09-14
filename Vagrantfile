@@ -2,7 +2,7 @@
 # vi: set ft=ruby :
 mounts_required = Array.[]('/srv/www', '/srv/mysql', '/srv/backup')
 mem_ratio = 0.5
-cpu_exec_cap = 75
+cpu_exec_cap = 100
 config_php = ''
 
 # Use config.yml for basic VM configuration.
@@ -24,9 +24,9 @@ mounts_required.each do |required_folder|
   end
   if found == false
     puts "\n" +
-      '**********************' + "\n" +
+      '**************************' + "\n" +
       '* Bounteous Vagrant Lamp *' + "\n" +
-      '**********************' + "\n" +
+      '**************************' + "\n" +
       'Your config.yml file must contain ' +
       mounts_required.count.to_s +
       ' vagrant_synced_folders entries' + "\n" +
@@ -35,6 +35,29 @@ mounts_required.each do |required_folder|
       "\n"
     exit
   end
+end
+
+es6Enabled = false
+es7Enabled = false
+vconfig['vagrant_optional_software'].each do |optional_software|
+  if optional_software['enabled'].to_s == 'true'
+    if optional_software['name'] == 'elasticsearch6'
+      es6Enabled = true
+    elsif optional_software['name'] == 'elasticsearch7'
+      es7Enabled = true
+    end
+  end
+end
+
+if es6Enabled && es7Enabled
+  puts "\n" +
+    '**************************' + "\n" +
+    '* Bounteous Vagrant Lamp *' + "\n" +
+    '**************************' + "\n" +
+    'Your can enabled either Elasticsearch 6 or 7, not both. ' +
+    "Please see example.config.yml for details on how to set this.\n" +
+    "\n"
+  exit
 end
 
 # Module for determine host Operating System
@@ -119,7 +142,7 @@ Vagrant.configure(2) do |config|
   if !vconfig['vagrant_public_ip'].empty? && vconfig['vagrant_public_ip'] == '0.0.0.0'
     config.vm.network :public_network
   elsif !vconfig['vagrant_public_ip'].empty?
-    config.vm.network :public_network, ip: vconfig['vagrant_public_ip']
+    config.vm.network :public_network, ip: vconfig['vagrant_public_ip'], bridge: "Intel(R) Ethernet Connection (7) I219-V"
   end
   
   # Synced folders.
@@ -161,7 +184,7 @@ Vagrant.configure(2) do |config|
     vb.name = vconfig['vagrant_hostname']
     vb.customize ["modifyvm", :id, "--memory", mem]
     vb.customize ["modifyvm", :id, "--cpus", cpus]
-    vb.customize ["modifyvm", :id, "--cpuexecutioncap", cpu_exec_cap]
+    #vb.customize ["modifyvm", :id, "--cpuexecutioncap", cpu_exec_cap]
     vb.customize ['modifyvm', :id, '--natdnshostresolver1', 'on']
     vb.customize ['modifyvm', :id, '--ioapic', 'on']
   end

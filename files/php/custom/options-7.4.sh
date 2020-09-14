@@ -7,6 +7,7 @@ configoptions="
 --enable-exif \
 --enable-fpm \
 --enable-ftp \
+--enable-gd \
 --enable-intl \
 --enable-mbstring \
 --enable-opcache \
@@ -14,9 +15,8 @@ configoptions="
 --enable-soap \
 --enable-sockets \
 --enable-wddx \
---enable-zip \
 --with-curl \
---with-freetype-dir=/usr/include/freetype2 \
+--with-freetype \
 --with-gd \
 --with-gettext \
 --with-gmp \
@@ -31,5 +31,6 @@ configoptions="
 --with-png-dir \
 --with-readline \
 --with-xsl \
+--with-zip \
 --with-zlib
 "

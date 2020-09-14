@@ -40,6 +40,12 @@ vagrant_optional_software:
   - name: rabbitmq
     enabled: false
 
+  - name: elasticsearch6
+    enabled: false
+
+  - name: elasticsearch7
+    enabled: true
+
 # PHP versions to install
 vagrant_php_versions:
   - enabled: false
@@ -69,5 +75,10 @@ vagrant_php_versions:
 
   - enabled: false
     alias: 7.3
-    version: 7.3.4
+    version: 7.3.14
     port: 9073
+
+  - enabled: true
+    alias: 7.4
+    version: 7.4.8
+    port: 9074
