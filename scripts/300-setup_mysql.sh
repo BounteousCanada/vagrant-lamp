@@ -36,10 +36,10 @@ fi
 if [ ! -f /etc/init.d/mysql* ] || [ $(apt-cache policy percona-server-server-5. | grep -c "Installed: 5.") -eq 0 ]; then
     wget --progress=bar:force https://repo.percona.com/apt/percona-release_latest.$(lsb_release -sc)_all.deb
     dpkg -i percona-release_latest.$(lsb_release -sc)_all.deb
-    apt-get update
+    DEBIAN_FRONTEND=noninteractive apt-get update
     echo "percona-server-server-5.7 percona-server-server/root_password password root"       | debconf-set-selections
     echo "percona-server-server-5.7 percona-server-server/root_password_again password root" | debconf-set-selections
-    apt-get install -y percona-server-server-5.7 percona-server-client-5.7 libmysqlclient-dev 2>&1
+    DEBIAN_FRONTEND=noninteractive apt-get install -y percona-server-server-5.7 percona-server-client-5.7 libmysqlclient-dev 2>&1
     service mysql stop
 
     printf "[mysqld]\nbind-address = 0.0.0.0\nmax_allowed_packet = 64M\ndatadir = /srv/mysql/data\ninnodb_log_file_size = 256M\ninnodb_use_native_aio=0\n" >> /etc/mysql/my.cnf
@@ -72,7 +72,7 @@ if [ $(apt-cache policy percona-server-server-5.6 | grep -c "Installed: 5.6") -e
     service mysql restart
 fi
 
-apt-get install -y percona-toolkit 2>&1
+DEBIAN_FRONTEND=noninteractive apt-get install -y percona-toolkit 2>&1
 
 # Setup mysql-sync script
 yes | cp -rf /vagrant/files/tools/mysql-sync.sh /usr/local/bin/mysql-sync

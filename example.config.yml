@@ -38,7 +38,7 @@ vagrant_optional_software:
     enabled: false
 
   - name: rabbitmq
-    enabled: false
+    enabled: true
 
   - name: elasticsearch6
     enabled: false
@@ -63,22 +63,22 @@ vagrant_php_versions:
     version: 7.0.33
     port: 9070
 
-  - enabled: true
+  - enabled: false
     alias: 7.1
     version: 7.1.27
     port: 9071
 
   - enabled: true
     alias: 7.2
-    version: 7.2.16
+    version: 7.2.21
     port: 9072
 
-  - enabled: false
+  - enabled: true
     alias: 7.3
-    version: 7.3.14
+    version: 7.3.8
     port: 9073
 
   - enabled: true
     alias: 7.4
-    version: 7.4.8
+    version: 7.4.9
     port: 9074

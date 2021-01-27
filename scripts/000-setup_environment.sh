@@ -42,10 +42,14 @@ if [ ! -f /root/.bash_aliases ] || [ $(grep -c "for f in /etc/profile.d/\*aliase
 fi
 
 # Setup PHP compile pre-requisites
-DEBIAN_FRONTEND=noninteractive apt-get install -yq build-essential libbz2-dev libxpm-dev libmcrypt-dev\
-    language-pack-en libsqlite3-dev libonig-dev libldb-dev libldap2-dev libgmp-dev\
-    libcurl4-gnutls-dev libxml2-dev libjpeg-dev libpng-dev libssl-dev pkg-config libreadline-dev \
-    curl autoconf libicu-dev libxslt-dev libfreetype6-dev daemonize libzip-dev libmagickwand-dev 2>&1
+DEBIAN_FRONTEND=noninteractive apt-get install -yq apt-transport-https autoconf build-essential \
+  build-essential ca-certificates curl curl daemonize g++ git git-flow gnupg2 graphviz htop \
+  language-pack-en libbz2-dev libcurl4-gnutls-dev libfreetype6-dev libgmp-dev libicu-dev libjpeg-dev \
+  libldap2-dev libldb-dev libmagickwand-dev libmcrypt-dev libnss3-tools libonig-dev libpng-dev \
+  libreadline-dev libsasl2-2 libsasl2-modules libsqlite3-dev libsqlite3-dev libssl-dev libxml2-dev \
+  libxml2-utils libxpm-dev libxslt-dev libzip-dev mailutils net-tools nginx openjdk-8-jdk \
+  openjdk-8-jre openssl pkg-config postfix python redis-server rsync ruby ruby-dev \
+  software-properties-common sudo tree unzip vim wget zip 2>&1
 
 # Fix for Curl directory errors on earier versions of PHP
 if [ ! -d /usr/include/curl ]; then
