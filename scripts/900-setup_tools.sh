@@ -42,6 +42,22 @@ if [ ! -f /usr/local/bin/n98 ] || [ ! -f /usr/local/bin/n98-1 ] || [ ! -f /usr/l
 
     cp /vagrant/files/tools/n98 /usr/local/bin/n98
     chmod +x /usr/local/bin/n98
+
+    if [ ! -d /usr/local/share/n98-magerun/modules ]; then
+      mkdir /usr/local/share/n98-magerun/
+      mkdir /usr/local/share/n98-magerun/modules
+    fi
+    cd /usr/local/share/n98-magerun/modules
+    git clone https://github.com/gwillem/magevulndb.git
+
+    if [ ! -d /usr/local/share/n98-magerun2/modules ]; then
+      mkdir /usr/local/share/n98-magerun2/
+      mkdir /usr/local/share/n98-magerun2/modules
+    fi
+    cd /usr/local/share/n98-magerun2/modules
+    git clone https://github.com/gwillem/magevulndb.git
+
+    cd /tmp
 fi
 
 # Bash completion for Magento CLI
