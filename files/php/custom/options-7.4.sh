@@ -17,19 +17,19 @@ configoptions="
 --enable-wddx \
 --with-curl \
 --with-freetype \
---with-gd \
 --with-gettext \
 --with-gmp \
---with-jpeg-dir \
+--with-jpeg \
 --with-layout=GNU \
---with-libzip \
 --with-ldap \
+--with-libzip \
 --with-mysqli \
 --with-openssl \
---with-pear \
 --with-pdo-mysql \
+--with-pear \
 --with-png-dir \
 --with-readline \
+--with-sodium \
 --with-xsl \
 --with-zip \
 --with-zlib
