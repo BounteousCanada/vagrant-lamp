@@ -26,6 +26,9 @@ specifically.
     # Run Vagrant Up to download and setup the VM
     vagrant up
 
+    # Prestissimo speed up installation on active PHP version
+    composer global require hirak/prestissimo
+
 ### Configuration
 -   config.yml settings
     -   vagrant_hostname: Hostname on Guest VM
@@ -54,7 +57,7 @@ specifically.
         vagrant_synced_folders:
           - local_path: ~/projects/www
             destination: /srv/www
-            type: nfs 
+            type: nfs
             create: true
 
           - local_path: ~/projects/mysql
@@ -73,17 +76,17 @@ specifically.
         vagrant_optional_software:
           - name: solr
             enabled: true
-        
+
           - name: rabbitmq
             enabled: false
         ```
     - vagrant_php_versions: Settings to determine which versions of PHP to install/build
         -   enabled: Enabled or Disables this version (disabled versions are removed from phpfarm on provisioning)
-        -   alias: Used for the creation of PHP alias's allowing you to call specific PHP versions from anywhere (ie `alias: 7.3` creates an alias in the vm of `php7.3`) 
+        -   alias: Used for the creation of PHP alias's allowing you to call specific PHP versions from anywhere (ie `alias: 7.3` creates an alias in the vm of `php7.3`)
             -   `NOTE: must be unique between versions`
         -   version: PHP version to install (at the moment 5.5.38, 5.6.40, 7.0.33, 7.1.27, 7.2.16 and 7.3.4 are available pre-compiled, any other version will attempt to build during provisioning )
-        -   port: PHP port to use 
-            -   `NOTE: must be unique between versions` 
+        -   port: PHP port to use
+            -   `NOTE: must be unique between versions`
         -   build: When included and set to `true` the pre-compiled version will not be downloaded but instead will be built during provisioning (OPTIONAL)
         ```
         # Example of PHP versions to install
@@ -92,34 +95,34 @@ specifically.
             alias: 5.5
             version: 5.5.38
             port: 9055
-        
+
           - enabled: false
             alias: 5.6
             version: 5.6.40
             port: 9056
-        
+
           - enabled: false
             alias: 7
             version: 7.0.33
             port: 9070
-        
+
           - enabled: true
             alias: 7.1
             version: 7.1.27
             port: 9071
             build: true
-        
+
           - enabled: true
             alias: 7.2
             version: 7.2.16
             port: 9072
-        
+
           - enabled: false
             alias: 7.3
             version: 7.3.4
             port: 9073
         ```
-    
+
 
 #### The following are available:
 
