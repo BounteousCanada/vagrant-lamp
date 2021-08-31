@@ -9,7 +9,7 @@ source /vagrant/files/setup_helper.sh
 print_header "Setup MySql"
 
 # If mysql is already here, move existing data to /srv/mysql/data and change my.cnf to point there
-if [ -f /etc/init.d/mysql* ]; then
+if [ -f /etc/init.d/mysql* ] && [ $(apt-cache policy percona-server-server-5. | grep -c "Installed: 5.") -eq 1 ]; then
     service mysql stop
 
     sed -i "s/datadir.*/datadir = \/srv\/mysql\/data/" /etc/mysql/my.cnf
@@ -33,13 +33,13 @@ if [ -f /etc/init.d/mysql* ]; then
     export MYSQL_PWD=''
 fi
 
-if [ ! -f /etc/init.d/mysql* ]; then
+if [ ! -f /etc/init.d/mysql* ] || [ $(apt-cache policy percona-server-server-5. | grep -c "Installed: 5.") -eq 0 ]; then
     wget --progress=bar:force https://repo.percona.com/apt/percona-release_latest.$(lsb_release -sc)_all.deb
     dpkg -i percona-release_latest.$(lsb_release -sc)_all.deb
-    apt-get update
-    echo "percona-server-server-5.6 percona-server-server/root_password password root"       | debconf-set-selections
-    echo "percona-server-server-5.6 percona-server-server/root_password_again password root" | debconf-set-selections
-    apt-get install -y percona-server-server-5.6 percona-server-client-5.6 libmysqlclient-dev 2>&1
+    DEBIAN_FRONTEND=noninteractive apt-get update
+    echo "percona-server-server-5.7 percona-server-server/root_password password root"       | debconf-set-selections
+    echo "percona-server-server-5.7 percona-server-server/root_password_again password root" | debconf-set-selections
+    DEBIAN_FRONTEND=noninteractive apt-get install -y percona-server-server-5.7 percona-server-client-5.7 libmysqlclient-dev 2>&1
     service mysql stop
 
     printf "[mysqld]\nbind-address = 0.0.0.0\nmax_allowed_packet = 64M\ndatadir = /srv/mysql/data\ninnodb_log_file_size = 256M\ninnodb_use_native_aio=0\n" >> /etc/mysql/my.cnf
@@ -61,7 +61,18 @@ if [ ! -f /etc/init.d/mysql* ]; then
     export MYSQL_PWD=''
 fi
 
-apt-get install -y percona-toolkit 2>&1
+# Upgrade Mysql from 5.6 to 5.7
+if [ $(apt-cache policy percona-server-server-5.6 | grep -c "Installed: 5.6") -eq 1 ]; then
+    echo "percona-server-server-5.7 percona-server-server/root_password password root"       | debconf-set-selections
+    echo "percona-server-server-5.7 percona-server-server/root_password_again password root" | debconf-set-selections
+    DEBIAN_FRONTEND=noninteractive apt-get install -y percona-server-server-5.7 percona-server-client-5.7 libmysqlclient-dev 2>&1
+    export MYSQL_PWD='root'
+    mysql_upgrade -u'root'
+    export MYSQL_PWD=''
+    service mysql restart
+fi
+
+DEBIAN_FRONTEND=noninteractive apt-get install -y percona-toolkit 2>&1
 
 # Setup mysql-sync script
 yes | cp -rf /vagrant/files/tools/mysql-sync.sh /usr/local/bin/mysql-sync
