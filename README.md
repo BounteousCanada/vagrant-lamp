@@ -30,7 +30,7 @@ specifically.
     composer global require hirak/prestissimo
 
 ### Configuration
--   config.yml settings
+-   config.yml settings (please see information on Big Sur [compatibility](#compatibility-with-macos-11-big-sur))
     -   vagrant_hostname: Hostname on Guest VM
         -   Recommended leave default `bounteous.vm.dev`
     -   vagrant_machine_name: Vagrant Machine Name, used for creating unique VM
@@ -163,3 +163,11 @@ specifically.
     - Sync Remote Database to VM Mysql instance
 
         ```Usage: mysql-sync -i remote-ip -p remote-port -u remote-username -d remote-database```
+
+
+### Compatibility with macOS 11 Big Sur
+-   Until further notice, please use the following:
+    - [Vagrant](https://www.vagrantup.com/downloads) v2.2.18
+    - Virtual Box [v6.1.26](https://www.virtualbox.org/wiki/Download_Old_Builds_6_1)
+-   in `config.yml`, update your `local_path` to use a `/System/Volumes/Data/Users/yourname/` prefix
+    - instead of the previous usage of `~`
