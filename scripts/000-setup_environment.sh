@@ -45,11 +45,11 @@ fi
 DEBIAN_FRONTEND=noninteractive apt-get install -yq apt-transport-https autoconf build-essential \
   ca-certificates curl daemonize g++ git git-flow gnupg2 graphviz htop language-pack-en \
   libbz2-dev libcurl4-gnutls-dev libfreetype6-dev libgmp-dev libicu-dev libjpeg-dev \
-  libldap2-dev libldb-dev libmagickwand-dev libmcrypt-dev libnss3-tools libonig-dev \
-  libpng-dev libreadline-dev libsasl2-2 libsasl2-modules libsodium23 libsodium-dev \
-  libsqlite3-dev libssl-dev libxml2-dev libxml2-utils libxpm-dev libxslt-dev libzip-dev \
-  mailutils net-tools openjdk-8-jdk openjdk-8-jre openssl pkg-config postfix python \
-  redis-server rsync ruby ruby-dev software-properties-common sudo tree unzip vim wget zip 2>&1
+  libldap2-dev libldb-dev libmagickwand-dev libmcrypt-dev libnss3-tools libonig-dev libpng-dev \
+  libreadline-dev libsasl2-2 libsasl2-modules libsodium-dev libsodium23 libsqlite3-dev \
+  libssl-dev libxml2-dev libxml2-utils libxpm-dev libxslt-dev libzip-dev mailutils net-tools \
+  nginx openjdk-8-jdk openjdk-8-jre openssl pkg-config postfix python redis-server rsync ruby \
+  ruby-dev software-properties-common sudo tree unzip vim wget zip 2>&1
 
 # Fix for Curl directory errors on earier versions of PHP
 if [ ! -d /usr/include/curl ]; then

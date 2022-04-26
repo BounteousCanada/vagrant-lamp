@@ -8,6 +8,9 @@ source /vagrant/files/setup_helper.sh
 # Print Header
 print_header "Setup Finish"
 
+# Clean
+apt-get -y upgrade && apt-get -y clean autoclean && apt-get -y autoremove
+
 # Restart Services
 service apache2 restart
 service varnish restart

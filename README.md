@@ -127,11 +127,11 @@ specifically.
 #### The following are available:
 
 -   Apache2 2.4.29
--   Percona 5.6 (MySQL Server and Client)
+-   Percona 5.6, 5.7 (MySQL Server and Client)
 -   Varnish 5.2.1
 -   Redis
--   PHP-FPM 5.5, 5.6, 7.0, 7.1, 7.2 & 7.3 /w Xdebug (via PHPFARM)
--   ElasticSearch 6.7.1
+-   PHP-FPM 5.5, 5.6, 7.0, 7.1, 7.2, 7.3, 7.4 /w Xdebug (via PHPFARM)
+-   ElasticSearch 6.8.23, 7.17.3
 -   RabbitMq 3.6.10 (Optional)
 -   Solr 3.4.0, 3.5.0 & 3.6.2 (Optional)
 -   HTOP

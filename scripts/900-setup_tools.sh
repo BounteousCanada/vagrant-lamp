@@ -13,10 +13,11 @@ if [ ! -f /usr/local/bin/composer ]; then
     echo "Setup Composer."
     cd /tmp
     php=/opt/phpfarm/inst/php-$(ls -1 /opt/phpfarm/inst/ | grep php | tail -n1 | cut -d'-' -f2)/bin/php;
-    ${php} -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+    wget -O composer-setup.php https://getcomposer.org/installer
     ${php} composer-setup.php --1
     ${php} -r "unlink('composer-setup.php');"
     mv composer.phar /usr/local/bin/composer
+    echo "Composer moved to: /usr/local/bin/composer"
     chmod +x /usr/local/bin/composer
 fi
 

@@ -14,7 +14,7 @@ function setup_xdebug() {
     if [ -d /usr/lib/xdebug ]; then
         rm -rf xdebug
     fi
-    git clone git://github.com/xdebug/xdebug.git
+    git clone https://github.com/xdebug/xdebug.git
     cd xdebug
 
     if [[ $1 == *"5.5"* ]] ; then
@@ -45,7 +45,7 @@ function setup_apcu() {
     if [ -d /usr/lib/apcu ]; then
         rm -rf apcu
     fi
-    git clone git://github.com/krakjoe/apcu.git
+    git clone https://github.com/krakjoe/apcu.git
     cd apcu
 
     if [[ $1 == *"5.5"* ]] || [[ $1 == *"5.6"* ]] ; then
@@ -134,7 +134,7 @@ function setup_php() {
         fi
     done;
 
-    # Add new versions of PHP 
+    # Add new versions of PHP
     for i in "${config_php[@]}"; do
         arr=(${i// / })
         phpVersion=${arr[0]}
